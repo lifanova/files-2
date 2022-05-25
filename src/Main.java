@@ -27,8 +27,16 @@ public class Main {
         saveGame(PATH + "save3.dat", thirdGame);
 
         zipFiles(PATH + "all.zip", files);
+
+        deleteFiles(files);
     }
 
+    /**
+     * Сохранение сериализуемого объекта GameProgress в файл .dat
+     *
+     * @param path         - путь к файлу
+     * @param gameProgress - сохраняемый объект
+     */
     private static void saveGame(String path, GameProgress gameProgress) {
         // откроем выходной поток для записи в файл
         try (FileOutputStream fos = new FileOutputStream(path);
@@ -40,8 +48,13 @@ public class Main {
         }
     }
 
+    /**
+     * Упаковка списка файлов в zip-архив
+     *
+     * @param zipPath - путь к архиву
+     * @param files   - список имен файлов
+     */
     private static void zipFiles(String zipPath, List<String> files) {
-
         try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipPath))) {
             for (String filename : files) {
                 processFile(zout, filename);
@@ -53,6 +66,12 @@ public class Main {
         }
     }
 
+    /**
+     * Добавление файла к архиву
+     *
+     * @param zout     - объект ZipOutputStream
+     * @param filename - имя файла
+     */
     private static void processFile(ZipOutputStream zout, String filename) {
         String filepath = PATH + filename;
         try (FileInputStream fis = new FileInputStream(filepath)) {
@@ -65,6 +84,22 @@ public class Main {
             zout.write(buffer);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Удаление спсика файлов, не лежащих в архиве
+     *
+     * @param files - список имен файлов
+     */
+    public static void deleteFiles(List<String> files) {
+        for (String filename : files) {
+            String filepath = PATH + filename;
+            File file = new File(filepath);
+
+            if (file.delete()) {
+                System.out.println("[deleteFiles]: Файл " + filename + " удален");
+            }
         }
     }
 }
